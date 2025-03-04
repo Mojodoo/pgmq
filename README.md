@@ -1,15 +1,43 @@
 # @mojodoo/pgmq
 
-To install dependencies:
+A library for using Postgres Message Queue with `Bun.sql`
+
+## Getting started
+
+To use this library you first need a Postgres instance with the PGMQ extension available.
+
+Fastest way to do that is to run the Tembo Docker image.
+
+```bash
+docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
+```
+
+Install this library:
+```bash
+bun add @mojodoo/pgmq
+```
+
+
+
+## Using the library
+
+
+## Development
+
+Install dependencies:
 
 ```bash
 bun install
 ```
 
-To run:
-
+Start the PGMQ container
 ```bash
-bun run src/index.ts
+docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
 ```
 
-This project was created using `bun init` in bun v1.2.2. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Run the tests:
+
+```bash
+bun run test
+```
+
