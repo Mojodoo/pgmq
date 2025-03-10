@@ -21,6 +21,36 @@ bun add @mojodoo/pgmq
 
 ## Using the library
 
+### Supported functions
+
+Sending messages
+- [x] send
+- [] send_batch
+
+Reading messages
+- [x] read
+- [x] read_with_poll
+- [] pop
+
+Deleting/archiving messages
+- [x] delete (single)
+- [] delete (batch)
+- [] purge_queue
+- [x] archive (single)
+
+Queue management
+- [] create
+- [] create_partitioned
+- [] create_unlogged
+- [] detach_archive
+- [] drop_queue
+
+Utilities
+- [] set_vt
+- [] list_queues
+- [] metrics
+- [] metrics_all
+
 
 ## Development
 
