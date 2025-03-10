@@ -26,15 +26,7 @@ export function createClient(connectionString: string) {
 
 	return {
 		$connection: sql,
-		send: async (queueName: string, message: JSONSerializable) => {
-			const payload = JSON.stringify(message);
-			const res = await sql`select * from pgmq.send(
-				queue_name => ${queueName},
-				msg	   => ${payload}
-			)`.values();
-			return { messageId: res[0][0] };
-		},
-		sendDelayed: async (queueName: string, message: JSONSerializable, delayInSeconds: number) => {
+		send: async (queueName: string, message: JSONSerializable, delayInSeconds: number = 0) => {
 			const payload = JSON.stringify(message);
 			const res = await sql`select * from pgmq.send(
 				queue_name => ${queueName},
