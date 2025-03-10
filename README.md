@@ -21,7 +21,7 @@ bun add @mojodoo/pgmq
 
 ## Using the library
 
-### Supported functions
+### API compability
 
 Sending messages
 - [x] send
