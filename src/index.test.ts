@@ -6,37 +6,37 @@ describe("@mojodoo/pgmq - tests", () => {
 		expect(client.$connection).toBeDefined();
 	});
 
-	test("sendMessage - sends a message", async () => {
-		const res = await client.sendMessage(queueName, { foo: "bar" })
+	test("send - sends a message", async () => {
+		const res = await client.send(queueName, { foo: "bar" })
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 	});
 
-	test("sendDelayedMessage - sends a message", async () => {
-		const res = await client.sendDelayedMessage(queueName, { foo: "bar" }, 5)
+	test("sendDelayed - sends a message", async () => {
+		const res = await client.sendDelayed(queueName, { foo: "bar" }, 5)
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 	});
 
-	test("readMessages - reads messages", async () => {
-		const res = await client.readMessages(queueName, 1, 10);
+	test("read - reads messages", async () => {
+		const res = await client.read(queueName, 1, 10);
 		expect(res.length).toBe(1);
 	});
 
-	test("archiveMessage - archives the message", async () => {
-		const res = await client.sendMessage(queueName, { toBeArchived: true });
+	test("archive - archives the message", async () => {
+		const res = await client.send(queueName, { toBeArchived: true });
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 
-		await client.archiveMessage(queueName, res.messageId);
+		await client.archive(queueName, res.messageId);
 	});
 
-	test("deleteMessage - archives the message", async () => {
-		const res = await client.sendMessage(queueName, { toBeArchived: true });
+	test("delete - archives the message", async () => {
+		const res = await client.send(queueName, { toBeArchived: true });
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 
-		await client.deleteMessage(queueName, res.messageId);
+		await client.delete(queueName, res.messageId);
 	});
 
 });

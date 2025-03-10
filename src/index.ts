@@ -26,7 +26,7 @@ export function createClient(connectionString: string) {
 
 	return {
 		$connection: sql,
-		sendMessage: async (queueName: string, message: JSONSerializable) => {
+		send: async (queueName: string, message: JSONSerializable) => {
 			const payload = JSON.stringify(message);
 			const res = await sql`select * from pgmq.send(
 				queue_name => ${queueName},
@@ -34,7 +34,7 @@ export function createClient(connectionString: string) {
 			)`.values();
 			return { messageId: res[0][0] };
 		},
-		sendDelayedMessage: async (queueName: string, message: JSONSerializable, delayInSeconds: number) => {
+		sendDelayed: async (queueName: string, message: JSONSerializable, delayInSeconds: number) => {
 			const payload = JSON.stringify(message);
 			const res = await sql`select * from pgmq.send(
 				queue_name => ${queueName},
@@ -43,7 +43,7 @@ export function createClient(connectionString: string) {
 			)`.values();
 			return { messageId: res[0][0] };
 		},
-		readMessages: async (queueName: string, quantity: number, leaseInSeconds: number) => {
+		read: async (queueName: string, quantity: number, leaseInSeconds: number) => {
 			const res = await sql`select * from pgmq.read(
 				queue_name => ${queueName},
 				vt         => ${leaseInSeconds},
@@ -52,7 +52,7 @@ export function createClient(connectionString: string) {
 
 			return res.slice(0, quantity) as QueueMessage[];
 		},
-		pollMessages: async function*(queueName: string, quantity: number, leaseInSeconds: number, maxWaitTimeInSeconds: number, pollIntervalInMilliseconds: number = 100): AsyncGenerator<QueueMessage, void, unknown> {
+		readWithPoll: async function*(queueName: string, quantity: number, leaseInSeconds: number, maxWaitTimeInSeconds: number, pollIntervalInMilliseconds: number = 100): AsyncGenerator<QueueMessage, void, unknown> {
 			while (true) {
 				const res = await sql`select * from pgmq.read_with_poll(
 						queue_name 	 => ${queueName},
@@ -67,13 +67,13 @@ export function createClient(connectionString: string) {
 				}
 			}
 		},
-		archiveMessage: async (queueName: string, messageId: string) => {
+		archive: async (queueName: string, messageId: string) => {
 			await sql`select pgmq.archive(
 				queue_name => ${queueName},
 				msg_id	   => ${messageId}
 			)`;
 		},
-		deleteMessage: async (queueName: string, messageId: string) => {
+		delete: async (queueName: string, messageId: string) => {
 			await sql`select pgmq.delete(
 				queue_name => ${queueName},
 				msg_id	   => ${messageId}
