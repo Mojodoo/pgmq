@@ -1,0 +1,47 @@
+name: "@mojodoo/pgmq | run tests"
+
+on:
+  push:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: tembo.docker.scarf.sh/tembo/pg17-pgmq
+        env:
+          POSTGRES_USER: postgres 
+          POSTGRES_PASSWORD: mysecretpassword
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          # The version of Bun to install. (e.g. "latest", "canary", "1.0.0", "1.0.x", <sha>)
+          bun-version: latest 
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests in @mojodoo/pgmq
+        env:
+          CONNECTION_STRING: "postgresql://postgres:mysecretpassword@127.0.0.1:5432"
+        run: bun run test --reporter=junit --reporter-outfile TEST-pgmq.xml
+
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: ${{ github.workspace }}/**/TEST-*.xml
+        if: always()

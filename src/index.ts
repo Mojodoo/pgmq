@@ -51,6 +51,33 @@ export function createClient(connectionString: string) {
 			)`
 
 			return res.slice(0, quantity) as QueueMessage[];
-		}
+		},
+		pollMessages: async function*(queueName: string, quantity: number, leaseInSeconds: number, maxWaitTimeInSeconds: number, pollIntervalInMilliseconds: number = 100): AsyncGenerator<QueueMessage, void, unknown> {
+			while (true) {
+				const res = await sql`select * from pgmq.read_with_poll(
+						queue_name 	 => ${queueName},
+						vt	   	 => ${leaseInSeconds},
+						qty	   	 => ${quantity},
+						max_poll_seconds => ${maxWaitTimeInSeconds},
+						poll_interval_ms => ${pollIntervalInMilliseconds}
+					)`;
+				const messages = res.slice(0, quantity) as QueueMessage[];
+				for (const message of messages) {
+					yield message;
+				}
+			}
+		},
+		archiveMessage: async (queueName: string, messageId: string) => {
+			await sql`select pgmq.archive(
+				queue_name => ${queueName},
+				msg_id	   => ${messageId}
+			)`;
+		},
+		deleteMessage: async (queueName: string, messageId: string) => {
+			await sql`select pgmq.delete(
+				queue_name => ${queueName},
+				msg_id	   => ${messageId}
+			)`;
+		},
 	}
 }

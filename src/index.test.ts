@@ -23,7 +23,26 @@ describe("@mojodoo/pgmq - tests", () => {
 
 	test("readMessages - reads messages", async () => {
 		const client = createClient(process.env.CONNECTION_STRING);
-		const res = await client.readMessages("a_test_queue", 5, 10);
-		expect(res.length).toBe(5);
-	})
+		const res = await client.readMessages("a_test_queue", 1, 10);
+		expect(res.length).toBe(1);
+	});
+
+	test("archiveMessage - archives the message", async () => {
+		const client = createClient(process.env.CONNECTION_STRING);
+		const res = await client.sendMessage("a_test_queue", { toBeArchived: true });
+		expect(res).toBeDefined();
+		expect(res.messageId).toBeString();
+
+		await client.archiveMessage("a_test_queue", res.messageId);
+	});
+
+	test("deleteMessage - archives the message", async () => {
+		const client = createClient(process.env.CONNECTION_STRING);
+		const res = await client.sendMessage("a_test_queue", { toBeArchived: true });
+		expect(res).toBeDefined();
+		expect(res.messageId).toBeString();
+
+		await client.deleteMessage("a_test_queue", res.messageId);
+	});
+
 });

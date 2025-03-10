@@ -3,7 +3,7 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"test": "bun test"
+		"test": "bun test --preload ./test-setup.ts"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
