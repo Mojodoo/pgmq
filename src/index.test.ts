@@ -12,6 +12,11 @@ describe("@mojodoo/pgmq - tests", () => {
 		expect(res.messageId).toBeString();
 	});
 
+	test("sendBatch - sends messages", async () => {
+		const res = await client.sendBatch(queueName, [{ foo: "bar" }, { bar: "foo" }, { hello: "world" }])
+		expect(res).toBeDefined();
+	});
+
 	test("sendDelayed - sends a message", async () => {
 		const res = await client.send(queueName, { foo: "bar" }, 5)
 		expect(res).toBeDefined();

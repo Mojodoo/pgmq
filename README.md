@@ -25,7 +25,7 @@ bun add @mojodoo/pgmq
 
 Sending messages
 - [x] send
-- [ ] send_batch
+- [x] send_batch
 
 Reading messages
 - [x] read
