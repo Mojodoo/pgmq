@@ -25,31 +25,31 @@ bun add @mojodoo/pgmq
 
 Sending messages
 - [x] send
-- [] send_batch
+- [ ] send_batch
 
 Reading messages
 - [x] read
 - [x] read_with_poll
-- [] pop
+- [ ] pop
 
 Deleting/archiving messages
 - [x] delete (single)
-- [] delete (batch)
-- [] purge_queue
+- [ ] delete (batch)
+- [ ] purge_queue
 - [x] archive (single)
 
 Queue management
-- [] create
-- [] create_partitioned
-- [] create_unlogged
-- [] detach_archive
-- [] drop_queue
+- [ ] create
+- [ ] create_partitioned
+- [ ] create_unlogged
+- [ ] detach_archive
+- [ ] drop_queue
 
 Utilities
-- [] set_vt
-- [] list_queues
-- [] metrics
-- [] metrics_all
+- [ ] set_vt
+- [ ] list_queues
+- [ ] metrics
+- [ ] metrics_all
 
 
 ## Development
