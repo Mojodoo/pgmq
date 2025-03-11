@@ -39,7 +39,7 @@ Deleting/archiving messages
 - [x] archive (single)
 
 Queue management
-- [ ] create
+- [x] create
 - [ ] create_partitioned
 - [ ] create_unlogged
 - [ ] detach_archive

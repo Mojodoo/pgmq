@@ -52,4 +52,10 @@ describe("@mojodoo/pgmq - tests", () => {
 		expect(res).toBeDefined();
 		expect(res).toBeNumber();
 	});
+
+	test("queueManagement.create - creates a queue", async () => {
+		expect(
+			async () => await client.queueManagement.create("foo")
+		).not.toThrowError();
+	});
 });

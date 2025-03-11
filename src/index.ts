@@ -78,6 +78,11 @@ export function createClient(connectionString: string) {
 		purgeQueue: async (queueName: string) => {
 			const res = await sql`select * from pgmq.purge_queue(${queueName})`;
 			return parseInt(res[0].purge_queue);
+		},
+		queueManagement: {
+			create: async (queueName: string) => {
+				await sql`select from pgmq.create(${queueName})`;
+			}
 		}
 	}
 }
