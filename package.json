@@ -3,9 +3,12 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"test": "bun test --preload ./test-setup.ts"
+		"test": "bun test --preload ./test-setup.ts",
+		"lint": "biome check",
+		"format": "biome check --write --unsafe"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
 		"@types/bun": "latest"
 	},
 	"peerDependencies": {

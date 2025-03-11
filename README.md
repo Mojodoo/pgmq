@@ -43,7 +43,7 @@ Queue management
 - [ ] create_partitioned
 - [ ] create_unlogged
 - [ ] detach_archive
-- [ ] drop_queue
+- [x] drop_queue
 
 Utilities
 - [ ] set_vt

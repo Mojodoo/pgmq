@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { testClient as client, queueName } from "../test-setup";
 
 describe("@mojodoo/pgmq - tests", () => {
@@ -7,19 +7,19 @@ describe("@mojodoo/pgmq - tests", () => {
 	});
 
 	test("send - sends a message", async () => {
-		const res = await client.send(queueName, { foo: "bar" })
+		const res = await client.send(queueName, { foo: "bar" });
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 	});
 
 	test("sendDelayed - sends a message", async () => {
-		const res = await client.send(queueName, { foo: "bar" }, 5)
+		const res = await client.send(queueName, { foo: "bar" }, 5);
 		expect(res).toBeDefined();
 		expect(res.messageId).toBeString();
 	});
 
 	test("read - reads messages", async () => {
-		const message = await client.send(queueName, { foo: "bar" })
+		const message = await client.send(queueName, { foo: "bar" });
 		expect(message).toBeDefined();
 		expect(message.messageId).toBeString();
 		const res = await client.read(queueName, 1, 10);
@@ -55,7 +55,13 @@ describe("@mojodoo/pgmq - tests", () => {
 
 	test("queueManagement.create - creates a queue", async () => {
 		expect(
-			async () => await client.queueManagement.create("foo")
+			async () => await client.queueManagement.create("foo"),
+		).not.toThrowError();
+	});
+
+	test("queueManagement.dropQueue - drops a queue", async () => {
+		expect(
+			async () => await client.queueManagement.dropQueue("foo"),
 		).not.toThrowError();
 	});
 });
