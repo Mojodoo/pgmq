@@ -25,12 +25,12 @@ bun add @mojodoo/pgmq
 
 Sending messages
 - [x] send
-- [x] send_batch
+- [ ] send_batch
 
 Reading messages
 - [x] read
 - [x] read_with_poll
-- [ ] pop
+- [x] pop
 
 Deleting/archiving messages
 - [x] delete (single)

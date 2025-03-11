@@ -35,15 +35,6 @@ export function createClient(connectionString: string) {
 			)`.values();
 			return { messageId: res[0][0] };
 		},
-		sendBatch: async (queueName: string, messages: JSONSerializable[], delayInSeconds: number = 0) => {
-			const payload: string[] = messages.map(m => JSON.stringify(m));
-			const res = await sql`select * from pgmq.send_batch(
-				queue_name => ${queueName},
-				msgs	   => ARRAY[${payload}]::jsonb[],
-				delay      => ${delayInSeconds}
-			)`;
-			return res;
-		},
 		read: async (queueName: string, quantity: number, leaseInSeconds: number) => {
 			const res = await sql`select * from pgmq.read(
 				queue_name => ${queueName},
@@ -68,6 +59,10 @@ export function createClient(connectionString: string) {
 				}
 			}
 		},
+		pop: async (queueName: string) => {
+			const res = await sql`select * from pgmq.pop(${queueName})`;
+			return res[0] as QueueMessage;
+		},
 		archive: async (queueName: string, messageId: string) => {
 			await sql`select pgmq.archive(
 				queue_name => ${queueName},
@@ -79,6 +74,6 @@ export function createClient(connectionString: string) {
 				queue_name => ${queueName},
 				msg_id	   => ${messageId}
 			)`;
-		},
+		}
 	}
 }
