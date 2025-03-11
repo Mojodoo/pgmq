@@ -35,7 +35,7 @@ Reading messages
 Deleting/archiving messages
 - [x] delete (single)
 - [ ] delete (batch)
-- [ ] purge_queue
+- [x] purge_queue
 - [x] archive (single)
 
 Queue management

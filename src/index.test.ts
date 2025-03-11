@@ -46,4 +46,10 @@ describe("@mojodoo/pgmq - tests", () => {
 
 		await client.delete(queueName, res.messageId);
 	});
+
+	test("purgeQueue - purges queue of messages", async () => {
+		const res = await client.purgeQueue(queueName);
+		expect(res).toBeDefined();
+		expect(res).toBeNumber();
+	});
 });

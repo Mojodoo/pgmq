@@ -74,6 +74,10 @@ export function createClient(connectionString: string) {
 				queue_name => ${queueName},
 				msg_id	   => ${messageId}
 			)`;
+		},
+		purgeQueue: async (queueName: string) => {
+			const res = await sql`select * from pgmq.purge_queue(${queueName})`;
+			return parseInt(res[0].purge_queue);
 		}
 	}
 }
