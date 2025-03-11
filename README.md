@@ -214,6 +214,3 @@ bun run test
 ## License
 
 MIT
-```
-
-
