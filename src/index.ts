@@ -1,4 +1,4 @@
-import { SQL } from "bun";
+import { SQL, type SQLOptions } from "bun";
 
 type JSONPrimitive = string | number | boolean | null;
 
@@ -19,9 +19,10 @@ type QueueMessage = {
 	headers: string | null;
 };
 
-export function createClient(connectionString: string) {
+export function createClient(connectionString: string, sqlOptions?: SQLOptions) {
 	const sql = new SQL({
 		url: connectionString,
+		...sqlOptions
 	});
 
 	return {
