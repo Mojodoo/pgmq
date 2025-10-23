@@ -115,6 +115,39 @@ describe("@mojodoo/pgmq/drizzle - tests", () => {
 		// Should not throw
 	});
 
+	test("archive - archives multiple messages", async () => {
+		// Send multiple messages
+		await pgmq(db).send(queueName, {
+			type: "email",
+			to: "archive1@example.com",
+			subject: "Archive 1",
+		});
+		await pgmq(db).send(queueName, {
+			type: "email",
+			to: "archive2@example.com",
+			subject: "Archive 2",
+		});
+		await pgmq(db).send(queueName, {
+			type: "email",
+			to: "archive3@example.com",
+			subject: "Archive 3",
+		});
+
+		const messages = await db.execute<{ msg_id: string }>(
+			sql`SELECT * FROM pgmq.read(${queueName}, 1, 10)`,
+		);
+		expect(messages.length).toBeGreaterThanOrEqual(3);
+
+		const msgIds = messages.slice(0, 3).map((m) => m.msg_id);
+		await pgmq(db).archive(queueName, msgIds);
+
+		// Verify all messages are archived
+		const archived = await db.execute(
+			sql`SELECT * FROM pgmq.${sql.raw(`a_${queueName}`)} WHERE msg_id = ANY(ARRAY[${sql.join(msgIds.map((id) => sql`${id}::bigint`), sql`, `)}])`,
+		);
+		expect(archived.length).toBe(3);
+	});
+
 	test("poll - yields messages", async () => {
 		await pgmq(db).send(queueName, {
 			type: "email",

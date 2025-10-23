@@ -69,6 +69,13 @@ export function createClient<QueueEventMap extends Record<string, unknown>>() {
 				`);
 				return;
 			}
+
+			await client.execute(sql`
+				SELECT * from pgmq.archive(
+					queue_name  => ${queueName},
+					msg_ids     => ARRAY[${sql.join(msgIdArray.map((id) => sql`${id}::bigint`), sql`, `)}]
+				);
+			`);
 		},
 		poll: async function* <Q extends QueueName>(
 			queueName: Q,
