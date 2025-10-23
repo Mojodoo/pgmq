@@ -1,6 +1,6 @@
 {
 	"name": "@mojodoo/pgmq",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"author": "gu-sx",
 	"description": "A library for using Postgres Message Queue with Bun.sql",
 	"license": "MIT",
