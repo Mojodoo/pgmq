@@ -12,6 +12,12 @@ Fastest way to do that is to run the Tembo Docker image.
 docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
 ```
 
+After starting the container, you need to enable the PGMQ extension:
+
+```bash
+docker exec -it pgmq-postgres psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+```
+
 Install this library:
 ```bash
 bun add @mojodoo/pgmq
@@ -320,6 +326,11 @@ bun install
 Start the PGMQ container
 ```bash
 docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
+```
+
+Enable the PGMQ extension:
+```bash
+docker exec -it pgmq-postgres psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
 ```
 
 Run the tests:
