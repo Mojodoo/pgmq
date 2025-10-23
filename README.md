@@ -12,12 +12,135 @@ Fastest way to do that is to run the Tembo Docker image.
 docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
 ```
 
+After starting the container, you need to enable the PGMQ extension:
+
+```bash
+docker exec -it pgmq-postgres psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+```
+
 Install this library:
 ```bash
 bun add @mojodoo/pgmq
 ```
 
 ## Using the library
+
+### Drizzle Client
+
+If you're using Drizzle ORM with Bun.sql, you can use the type-safe Drizzle client wrapper:
+
+```typescript
+import { drizzle } from 'drizzle-orm/bun-sql';
+import { createClient } from '@mojodoo/pgmq/drizzle';
+import * as schema from './schema';
+
+// Define your queue event types
+type QueueEventMap = {
+  'email-queue': { to: string; subject: string; body: string };
+  'notification-queue': { userId: string; message: string };
+};
+
+// Create Drizzle database instance
+const db = drizzle(connectionString, { schema });
+
+// Create type-safe PGMQ client factory with your queue types
+const pgmq = createClient<QueueEventMap>();
+
+// Use with database instance
+await pgmq(db).send('email-queue', {
+  to: 'user@example.com',
+  subject: 'Hello',
+  body: 'Test email'
+});
+
+// Send batch messages
+await pgmq(db).send('email-queue', [
+  { to: 'user1@example.com', subject: 'Hello', body: 'Test 1' },
+  { to: 'user2@example.com', subject: 'Hello', body: 'Test 2' }
+]);
+
+// Send with delay (5 seconds)
+await pgmq(db).send('email-queue', { to: 'user@example.com', subject: 'Hello', body: 'Test' }, 5);
+
+// Send with delay (specific timestamp)
+await pgmq(db).send('email-queue', { to: 'user@example.com', subject: 'Hello', body: 'Test' }, new Date('2024-12-31'));
+
+// Archive a message
+await pgmq(db).archive('email-queue', 'message-id');
+
+// Poll for messages (async generator)
+for await (const message of pgmq(db).poll('email-queue', 60, 10, 30, 100)) {
+  console.log('Received:', message.message);
+  // message is typed as QueueEventMap['email-queue']
+  await pgmq(db).archive('email-queue', message.msg_id);
+}
+```
+
+The Drizzle client also works within transactions:
+
+```typescript
+await db.transaction(async (tx) => {
+  // Your database operations
+  await tx.execute(sql`INSERT INTO users ...`);
+
+  // Send message within the same transaction
+  await pgmq(tx).send('notification-queue', {
+    userId: '123',
+    message: 'Welcome!'
+  });
+});
+```
+
+#### Queues with Multiple Event Types
+
+You can use union types to handle queues that process different types of events:
+
+```typescript
+type QueueEventMap = {
+  'task-queue':
+    | { type: 'email'; to: string; subject: string; body: string }
+    | { type: 'sms'; phoneNumber: string; message: string }
+    | { type: 'push'; deviceId: string; title: string; body: string };
+};
+
+const pgmq = createClient<QueueEventMap>();
+
+// Send different event types to the same queue
+await pgmq(db).send('task-queue', {
+  type: 'email',
+  to: 'user@example.com',
+  subject: 'Hello',
+  body: 'Test'
+});
+
+await pgmq(db).send('task-queue', {
+  type: 'sms',
+  phoneNumber: '+1234567890',
+  message: 'Hello'
+});
+
+// Process messages with type discrimination
+for await (const msg of pgmq(db).poll('task-queue', 60)) {
+  const event = msg.message;
+
+  if (event?.type === 'email') {
+    // TypeScript knows event has email properties
+    console.log(`Sending email to ${event.to}`);
+  } else if (event?.type === 'sms') {
+    // TypeScript knows event has sms properties
+    console.log(`Sending SMS to ${event.phoneNumber}`);
+  } else if (event?.type === 'push') {
+    // TypeScript knows event has push properties
+    console.log(`Sending push to ${event.deviceId}`);
+  }
+
+  await pgmq(db).archive('task-queue', msg.msg_id);
+}
+```
+
+### Bun.sql Client
+
+For direct Bun.sql usage without Drizzle:
 
 ### API compability
 
@@ -203,6 +326,11 @@ bun install
 Start the PGMQ container
 ```bash
 docker run -d --name pgmq-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 tembo.docker.scarf.sh/tembo/pg17-pgmq:latest
+```
+
+Enable the PGMQ extension:
+```bash
+docker exec -it pgmq-postgres psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
 ```
 
 Run the tests:

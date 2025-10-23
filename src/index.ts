@@ -19,10 +19,13 @@ type QueueMessage = {
 	headers: string | null;
 };
 
-export function createClient(connectionString: string, sqlOptions?: SQLOptions) {
+export function createClient(
+	connectionString: string,
+	sqlOptions?: SQLOptions,
+) {
 	const sql = new SQL({
 		url: connectionString,
-		...sqlOptions
+		...sqlOptions,
 	});
 
 	return {
