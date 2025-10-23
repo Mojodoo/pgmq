@@ -117,32 +117,16 @@ export function createClient(
 			return res[0] as QueueMessage;
 		},
 		/**
-		 * Archives a message or messages in the specified queue.
+		 * Archives a message in the specified queue.
 		 *
-		 * @param queueName - The name of the queue where the message(s) will be archived.
-		 * @param messageIdOrIds - The ID of the message to archive, or an array of message IDs.
-		 * @returns A promise that resolves once the message(s) are archived.
+		 * @param queueName - The name of the queue where the message will be archived.
+		 * @param messageId - The ID of the message to archive.
+		 * @returns A promise that resolves once the message is archived.
 		 */
-		archive: async (queueName: string, messageIdOrIds: string | string[]) => {
-			const messageIds = Array.isArray(messageIdOrIds)
-				? messageIdOrIds
-				: [messageIdOrIds];
-
-			if (messageIds.length < 1) {
-				return;
-			}
-
-			if (messageIds.length === 1) {
-				await sql`select pgmq.archive(
-					queue_name => ${queueName},
-					msg_id	   => ${messageIds[0]}
-				)`;
-				return;
-			}
-
-			await sql`select * from pgmq.archive(
+		archive: async (queueName: string, messageId: string) => {
+			await sql`select pgmq.archive(
 				queue_name => ${queueName},
-				msg_ids	   => ${messageIds}
+				msg_id	   => ${messageId}
 			)`;
 		},
 		/**
